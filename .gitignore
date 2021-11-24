@@ -1,3 +1,6 @@
+node_modules
+
+# Django
 db.sqlite3
 __pycache__/
 *.pyc
