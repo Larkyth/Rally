@@ -1,0 +1,13 @@
+# Converts between Python objects and JSON data
+
+
+from rest_framework import serializers
+from .models import SignUpUser
+
+
+
+# Serialize displayable user data
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SignUpUser
+        fields = ('id', 'username', 'password', 'email', 'first_name', 'last_name')
