@@ -9,6 +9,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./Header";
 import Home from "./Home";
 import Login from "./Login";
+import Signup from "./Signup";
+import Profile from "./UserProfile"
 
 
 export default class App extends Component {
@@ -21,21 +23,23 @@ export default class App extends Component {
         return (
 
             // Note the Route elements wanted are JSX elements
-
             <div>
                 <div>
                     <Header />
                 </div>
-                
+
                 <div>   
                     <BrowserRouter>
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="login" element={<Login />} />
+                            <Route path="signup" element={<Signup />} />
                         </Routes>
                     </BrowserRouter>
                 </div>
             </div>
+
+//                            <Route path="profile" element={<Profile />} />
 
         );
     }
