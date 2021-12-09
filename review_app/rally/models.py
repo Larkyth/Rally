@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group, User
 class SignUpUser(models.Model):
     # User model already has a username, email, password, first_name + last_name
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    tempfield = models.TextField(default="")
 
     # toString
     def __str__(self):

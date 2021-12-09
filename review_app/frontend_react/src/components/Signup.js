@@ -4,7 +4,6 @@ import { render } from "react-dom";
 
 export default class Signup extends Component {
 
-
   constructor(props) {
     super(props);
     this.state = {
@@ -27,7 +26,7 @@ export default class Signup extends Component {
   }
 
 
-  /** Form handling methods **/
+  /** Form handling methods -- should condense later **/ 
 
   // Username -- add validators?
   handleUN(e) {
@@ -56,7 +55,34 @@ export default class Signup extends Component {
 
   // Submit - POST request sent to backend
   handleSubmission() {
+    // Will replace with link to POST request handling in backend
+    console.log("Pre-request state:");
     console.log(this.state);
+
+    const requestSetup = {
+      method: 'post',
+      headers: { 
+        'Accept': 'application/json',
+        'Content-Type': 'application/json', },
+      body: JSON.stringify({
+        user: { username: this.state.username,
+          password: this.state.password,
+          email: this.state.email,
+          first_name: this.state.first_name,
+          last_name: this.state.last_name,
+        },
+        tempfield: "hello",
+      })
+    };
+    
+    console.log("POST request terms:");
+    console.log(requestSetup);
+
+    fetch("/rally/signup", requestSetup)
+      .then(response => response.json())
+      .then(response => console.log(response));
+  
+
   }
 
   render() {
@@ -66,8 +92,8 @@ export default class Signup extends Component {
           <h2>Sign up</h2>
         <form>
           <p>
-           <label>Username: 
-              <input type="text" name="username" onChange={this.handleUN} />
+           <label>Username:
+              <input type="text" name="username" placeholder={this.state.username} onChange={this.handleUN} />
             </label>
           </p>
           <p>
