@@ -9,7 +9,13 @@ export default class Header extends Component {
   }
 
   render() {
-    return <p>I'm the dashboard.</p>;
+    return (
+      <div className="dashhboard">
+        
+        <p>I am the dashboard.</p>
+
+      </div>
+    )
   }
 
 }

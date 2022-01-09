@@ -1,5 +1,5 @@
 from django.contrib import admin
-from rally.models import SignUpUser
+from rally.models import RallyUser
 
 # Register your models here.
-admin.site.register(SignUpUser)
+admin.site.register(RallyUser)

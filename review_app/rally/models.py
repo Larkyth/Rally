@@ -5,8 +5,8 @@ from django.contrib.auth.models import Group, User
 
 
 # Extended base User model from Django
-class SignUpUser(models.Model):
-    # User model already has a username, email, password, first_name + last_name
+class RallyUser(models.Model):
+    # User model already has an id, username, email, password, first_name + last_name
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     tempfield = models.TextField(default="")
 

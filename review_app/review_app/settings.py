@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+
+import rest_framework
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,17 +34,27 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'frontend_react.apps.FrontendReactConfig',
+    'knox',
     'rally.apps.RallyConfig',
     'rest_framework',
-    'corsheaders',
-    'frontend_react.apps.FrontendReactConfig',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',)
+}
+
+REST_KNOX = {
+    'TOKEN_LIMIT_PER_USER': 1,
+    'TOKEN_TTL': timedelta(minutes=2),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

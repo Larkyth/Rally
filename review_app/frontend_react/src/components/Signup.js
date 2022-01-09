@@ -1,128 +1,166 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+
+// Imported Redux setup
+import { signup } from "../actions/rallyusers";
+import store from "../store";
+
+import PropTypes from 'prop-types';
 
 
-export default class Signup extends Component {
+export class Signup extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      username: "default-username",
-      first_name: "default-name",
-      last_name: "default-surname",
-      email: "default-email",
-      password: "default-password",
+      // Form inputs
+      username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+
+      // State of process
+      signupSuccess: false,
+      errors: "",
     };
 
     // Bind form handlers to component
-    this.handleUN = this.handleUN.bind(this);
-    this.handleFN = this.handleFN.bind(this);
-    this.handleLN = this.handleLN.bind(this);
-    this.handleEM = this.handleEM.bind(this);
-    this.handlePW = this.handlePW.bind(this);
-
+    this.handleInput = this.handleInput.bind(this);
     // Submission handler
     this.handleSubmission = this.handleSubmission.bind(this);
   }
 
 
-  /** Form handling methods -- should condense later **/ 
+  static propTypes = {
+    signup: PropTypes.func.isRequired, // imported signup action
+  };
 
-  // Username -- add validators?
-  handleUN(e) {
-    this.setState({ username: e.target.value, })
+
+  // Handle form input
+  handleInput = (e) => {
+    this.setState({ 
+      // Might not need?
+      ...this.state,
+      [e.target.className]: e.target.value,
+    });
   }
 
-  // First name
-  handleFN(e) {
-    this.setState({ first_name: e.target.value, })
-  }
 
-  // Last name
-  handleLN(e) {
-    this.setState({ last_name: e.target.value,  })
-  }
-
-  // Email -- add validators?
-  handleEM(e) {
-    this.setState({ email: e.target.value,  })
-  }
-
-  // Password -- add validators?
-  handlePW(e) {
-    this.setState({ password: e.target.value, })
-  }
-
-  // Submit - POST request sent to backend
+  // Submit sign up form - sends a POST request to API
   handleSubmission() {
-    // Will replace with link to POST request handling in backend
-    console.log("Pre-request state:");
+
+    // Note that basic HTML5 input required attribute satisfies 
+    // the only frontend form validation needed (all fields filled)
+
     console.log(this.state);
 
-    const requestSetup = {
-      method: 'post',
-      headers: { 
-        'Accept': 'application/json',
-        'Content-Type': 'application/json', },
-      body: JSON.stringify({
-        user: { username: this.state.username,
-          password: this.state.password,
-          email: this.state.email,
-          first_name: this.state.first_name,
-          last_name: this.state.last_name,
-        },
-        tempfield: "hello",
-      })
-    };
-    
-    console.log("POST request terms:");
-    console.log(requestSetup);
-
-    fetch("/rally/signup", requestSetup)
-      .then(response => response.json())
-      .then(response => console.log(response));
-  
+    // Call the Redux signup action
+    this.props.signup(this.state.username, this.state.password, this.state.email, this.state.first_name, this.state.last_name);
 
   }
 
+
+  // Content presentation
   render() {
+
+    // Redirect if signup successful
+    // if(this.props.signupSuccess) { 
+    //   return <Redirect to="/login" /> 
+    // }
+
     return (
 
-      <div className="popup">
-          <h2>Sign up</h2>
-        <form>
-          <p>
-           <label>Username:
-              <input type="text" name="username" placeholder={this.state.username} onChange={this.handleUN} />
-            </label>
-          </p>
-          <p>
-            <label>Forename: 
-              <input type="text" name="first_name" onChange={this.handleFN} />
-            </label>
-          </p>
-          <p>
-            <label>Surname: 
-              <input type="text" name="last_name" onChange={this.handleLN} />
-            </label>
-          </p>
-          <p>
-            <label>Contact (E-mail): 
-              <input type="email" name="email" onChange={this.handleEM} />
-            </label>
-          </p>
-          <p>
-            <label>Password: 
-              <input type="password" name="password" onChange={this.handlePW} />
-            </label>
-          </p>
+      <div id="auth">
+        <div className="card border-primary mb-3" >
+          <div className="card-body">
+            <div className="card-title"><h2>Sign up</h2></div>
 
-          <input type="button" value="Submit" onClick={this.handleSubmission} />
-          
-        </form>
+
+            <div container="fluid">
+            <div className="signupform">
+
+            <form onSubmit={this.handleSubmission} >
+              <fieldset>
+                <div className="form-group row">
+                  <label className="form-label mt-4">Username:</label>
+                    <input 
+                      type="text" 
+                      required 
+                      className="username" 
+                      value={this.state.username} 
+                      onChange={this.handleInput} 
+                    />
+                </div>
+                <div className="form-group row">
+                  <label className="form-label mt-4">First name:</label>
+                    <input 
+                      type="text" 
+                      required 
+                      className="first_name" 
+                      value={this.state.first_name} 
+                      onChange={this.handleInput} 
+                    />
+                </div>
+                <div className="form-group row">
+                  <label className="form-label mt-4">Surname:</label>
+                    <input 
+                      type="text" 
+                      required 
+                      className="last_name" 
+                      value={this.state.last_name} 
+                      onChange={this.handleInput} 
+                    />
+                </div>
+                <div className="form-group row">
+                  <label className="form-label mt-4">Email:</label>
+                    <input 
+                      type="email" 
+                      required 
+                      className="email" 
+                      value={this.state.email} 
+                      onChange={this.handleInput} 
+                    />
+                </div>
+                <div className="form-group row">
+                  <label className="form-label mt-4">Password:</label> 
+                    <input 
+                      type="password" 
+                      required 
+                      className="password" 
+                      value={this.state.password} 
+                      onChange={this.handleInput} 
+                    />
+                </div>
+                <br />
+                <button 
+                  type="submit"
+                  className="btn btn-primary" 
+                >Submit</button>
+
+                <div className="form-group row">
+                  {this.state.errors}
+                </div>
+              </fieldset>
+              </form>
+            </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     );
   }
 
 }
+
+const mapStateToProps = (state) => ({
+  // Map the loggedin 
+  signupSuccess: state.rallyusers.loggedin,
+  // errors: state.rallyusers.errors,
+});
+
+// Make signup() action call available
+export default connect(mapStateToProps,{ signup })(Signup);

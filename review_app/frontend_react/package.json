@@ -13,15 +13,22 @@
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.4",
+    "@babel/plugin-transform-runtime": "^7.16.5",
+    "@babel/preset-env": "^7.16.5",
     "@babel/preset-react": "^7.16.0",
+    "@babel/runtime": "^7.16.5",
     "babel-loader": "^8.2.3",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "webpack": "^5.64.2",
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "react-router-dom": "^6.0.2"
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^6.0.1",
+    "react-router-dom": "^5.2.1",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.1"
   }
 }
