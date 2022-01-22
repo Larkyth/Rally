@@ -9,6 +9,8 @@ import { GET_USER,
     LOGOUT_FAILED, 
     SIGNUP_FAILED, 
     SIGNUP_SUCCESSFUL,
+    LIST_USERS,
+    RETRIEVAL_FAILED,
 } from "../actions/types.js";
 
 const initialState = {
@@ -16,6 +18,7 @@ const initialState = {
     loading: false,
     user: null,
     errors: null,
+    users: [],
 };
 
 // Define the state returned from an action to the place it is called from
@@ -37,16 +40,17 @@ export default function(state = initialState, action) {
 
         // Client is authenticated by token
         case USER_FOUND:
+            console.log(action.payload)
             return {
                 ...state,
-                loggedin: true,
                 loading: false,
+                loggedin: true,
                 user: action.payload,
             }
 
         // Client is not authenticated by token
         case USER_NOT_FOUND:
-            
+            console.log("reducer comment: user wasn't found (unauthenticated)")
             return {
                 ...state,
                 loggedin: false,
@@ -66,26 +70,44 @@ export default function(state = initialState, action) {
                 // errors: "Cannot access, user unauthorized.",
             }
 
-        /*  Checking login submission   */
-
-        case LOGIN_SUCCESSFUL:
-            console.log("login successful")
+        // Return list of registered users, for use in sign up process
+        case LIST_USERS:
+            console.log("reducer comment: users listed and stored in rallyusers['users']")
             return {
                 ...state,
-                ...action.payload,
+                users: action.payload,
                 loggedin: true,
                 loading: false,
             }
 
-        case LOGIN_FAILED:
-            console.log("login failed")
-            console.log(action.payload)
+        case RETRIEVAL_FAILED:
+            console.log("reducer comment: user list retrieval failed")
             return {
                 ...state,
-                user: null,
-                loggedin: false,
+                users: null,
                 loading: false,
-                // errors: action.payload,
+            }
+
+        /*  Login/Logout   */
+
+        case LOGIN_SUCCESSFUL:
+            console.log("reducer comment: login successful")
+            return {
+                ...state,
+                user: action.payload,
+                loggedin: true,
+                loading: false,
+                errors: null,
+            }
+
+        case LOGIN_FAILED:
+            console.log("reducer comment: login failed")
+            return {
+                ...state,
+                loading: false,
+                loggedin: false,
+                user: null,
+                errors: action.payload,
             }
 
         case LOGOUT_SUCCESSFUL:
@@ -102,15 +124,16 @@ export default function(state = initialState, action) {
                loading: false, 
             }
 
-        /*  Checking signup submission   */
+        /*  Sign up   */
 
         case SIGNUP_SUCCESSFUL:
             console.log("signup successful")
             return {
                 ...state,
-                user: null,
-                loggedin: false,
+                user: action.payload,
+                loggedin: true,
                 loading: false,
+                errors: null,
             }
 
         case SIGNUP_FAILED:
@@ -120,6 +143,7 @@ export default function(state = initialState, action) {
                 user: null,
                 loggedin: false,
                 loading: false,
+                errors: action.payload,
             }
 
         default:

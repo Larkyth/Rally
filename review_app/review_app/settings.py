@@ -48,12 +48,13 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',)
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M",
 }
 
 REST_KNOX = {
     'TOKEN_LIMIT_PER_USER': 1,
-    'TOKEN_TTL': timedelta(minutes=2),
+    'TOKEN_TTL': timedelta(minutes=60),
 }
 
 MIDDLEWARE = [

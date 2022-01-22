@@ -22,32 +22,47 @@ export class Signup extends Component {
       email: "",
       password: "",
 
+      role: "",
+
       // State of process
-      signupSuccess: false,
       errors: "",
     };
 
     // Bind form handlers to component
     this.handleInput = this.handleInput.bind(this);
+    this.recordRole = this.recordRole.bind(this);
+
     // Submission handler
     this.handleSubmission = this.handleSubmission.bind(this);
+    
+    // Form errors per feedback from backend
+    this.listErrors = this.listErrors.bind(this);
+
   }
 
 
   static propTypes = {
     signup: PropTypes.func.isRequired, // imported signup action
+    loggedin: PropTypes.bool,
+    errors: PropTypes.object,
   };
 
 
   // Handle form input
   handleInput = (e) => {
     this.setState({ 
-      // Might not need?
       ...this.state,
-      [e.target.className]: e.target.value,
+      [e.target.id]: e.target.value,
     });
   }
 
+  recordRole = (e) => {
+    console.log(e.target.value)
+    this.setState({
+      ...this.state,
+      role: e.target.value,
+    })
+  }
 
   // Submit sign up form - sends a POST request to API
   handleSubmission() {
@@ -58,7 +73,28 @@ export class Signup extends Component {
     console.log(this.state);
 
     // Call the Redux signup action
-    this.props.signup(this.state.username, this.state.password, this.state.email, this.state.first_name, this.state.last_name);
+    this.props.signup(this.state.username, this.state.password, this.state.email, this.state.first_name, this.state.last_name, this.state.role);
+
+  }
+
+  // List any backend errors received from a failed login attempt (i.e. incorrect credentials)
+  listErrors() {
+
+    // Check errors exist in reducer state
+    if(this.props.errors) {
+
+      const errorValues = Object.values(this.props.errors);
+      const errorList = errorValues.map((error) => 
+        <p key={error}>Error: {error}</p>
+      )
+
+      return errorList;
+    }
+    // Else, no errors to display 
+    else {
+      const errorList = [];
+      return errorList;
+    }
 
   }
 
@@ -67,9 +103,9 @@ export class Signup extends Component {
   render() {
 
     // Redirect if signup successful
-    // if(this.props.signupSuccess) { 
-    //   return <Redirect to="/login" /> 
-    // }
+    if(this.props.loggedin) { 
+      return <Redirect to="/login" /> 
+    }
 
     return (
 
@@ -89,7 +125,8 @@ export class Signup extends Component {
                     <input 
                       type="text" 
                       required 
-                      className="username" 
+                      id="username"
+                      className="form-control"
                       value={this.state.username} 
                       onChange={this.handleInput} 
                     />
@@ -99,7 +136,8 @@ export class Signup extends Component {
                     <input 
                       type="text" 
                       required 
-                      className="first_name" 
+                      id="first_name"
+                      className="form-control"
                       value={this.state.first_name} 
                       onChange={this.handleInput} 
                     />
@@ -109,7 +147,8 @@ export class Signup extends Component {
                     <input 
                       type="text" 
                       required 
-                      className="last_name" 
+                      id="last_name"
+                      className="form-control"
                       value={this.state.last_name} 
                       onChange={this.handleInput} 
                     />
@@ -119,7 +158,8 @@ export class Signup extends Component {
                     <input 
                       type="email" 
                       required 
-                      className="email" 
+                      id="email"
+                      className="form-control"
                       value={this.state.email} 
                       onChange={this.handleInput} 
                     />
@@ -129,19 +169,61 @@ export class Signup extends Component {
                     <input 
                       type="password" 
                       required 
-                      className="password" 
+                      id="password"
+                      className="form-control"
                       value={this.state.password} 
                       onChange={this.handleInput} 
                     />
                 </div>
+
+                <div className="form-group row">
+                  <label className="roletitle" >Role</label>
+                  <div className="btn-group d-flex" role="group" >
+                    <input 
+                      type="radio" 
+                      required
+                      className="btn-check" 
+                      name="btnradio" 
+                      id="supervisor-btn"  
+                      checked={this.state.role === "Supervisor"} 
+                      value="Supervisor" 
+                      onChange={this.recordRole} 
+                    />
+                    <label className="btn btn-outline-primary" htmlFor="supervisor-btn">Supervisor</label>
+                    <input 
+                      type="radio" 
+                      required
+                      className="btn-check" 
+                      name="btnradio" 
+                      id="mentor-btn" 
+                      checked={this.state.role === "Mentor"} 
+                      value="Mentor" 
+                      onChange={this.recordRole} 
+                    />
+                    <label className="btn btn-outline-primary" htmlFor="mentor-btn">Mentor</label>
+                    <input 
+                      type="radio" 
+                      required
+                      id="btn-check"
+                      className="btn-check" 
+                      name="btnradio" 
+                      id="student-btn" 
+                      checked={this.state.role === "Student"} 
+                      value="Student" 
+                      onChange={this.recordRole}
+                    />
+                    <label className="btn btn-outline-primary" htmlFor="student-btn">Student</label>
+                  </div>
+                </div>
+
                 <br />
                 <button 
                   type="submit"
                   className="btn btn-primary" 
                 >Submit</button>
-
+                <br />
                 <div className="form-group row">
-                  {this.state.errors}
+                  {this.listErrors()}
                 </div>
               </fieldset>
               </form>
@@ -157,9 +239,8 @@ export class Signup extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  // Map the loggedin 
-  signupSuccess: state.rallyusers.loggedin,
-  // errors: state.rallyusers.errors,
+  loggedin: state.rallyusers.loggedin,
+  errors: state.rallyusers.errors,
 });
 
 // Make signup() action call available

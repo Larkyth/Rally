@@ -6,4 +6,6 @@ urlpatterns = [
     path('login', index),
     path('signup', index),
     path('logout', index),
+    
+    path('createmeeting', index),
 ]

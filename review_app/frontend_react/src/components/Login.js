@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { render } from "react-dom";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
-
+import { Fragment } from "react";
 
 // Imported Redux setup
 import { login } from "../actions/rallyusers";
@@ -17,7 +17,7 @@ export class Login extends Component {
       // Form inputs
       username: "",
       password: "",
-      errors: null,
+
     };
 
     // Bind form handlers to component
@@ -25,18 +25,22 @@ export class Login extends Component {
     // Submission handler
     this.handleSubmission = this.handleSubmission.bind(this);
 
+    // Form errors per feedback from backend
+    this.listErrors = this.listErrors.bind(this);
+
    }
 
   static propTypes = {
     login: PropTypes.func.isRequired, // imported login action
     loggedin: PropTypes.bool,
+    errors: PropTypes.object,
   };
 
 
   // Handle form input
   handleInput = (e) => {
     this.setState({ 
-      [e.target.className]: e.target.value,
+      [e.target.id]: e.target.value,
     });
   }
   
@@ -45,21 +49,32 @@ export class Login extends Component {
   handleSubmission() {
 
     // Note that HTML5 measures satisfies basic frontend input validation
-
     // Use the login action to submit and handle post request
     this.props.login(this.state.username, this.state.password);
 
-    // console.log(this.props.errors["error"]);
-    // console.log(this.props.errors);
-
-    // if(!(this.props.errors == null)) {
-    //   this.setState({
-    //     errors: this.props.errors["error"],
-    //   });
-    // }
-
   } 
 
+
+  // List any backend errors received from a failed login attempt (i.e. incorrect credentials)
+  listErrors() {
+
+    // Check errors exist in reducer state
+    if(this.props.errors) {
+
+      const errorValues = Object.values(this.props.errors);
+      const errorList = errorValues.map((error) => 
+        <p key={error}>Error: {error}</p>
+      )
+
+      return errorList;
+    }
+    // Else, no errors to display 
+    else {
+      const errorList = [];
+      return errorList;
+    }
+
+  }
 
 
   render() {
@@ -70,7 +85,6 @@ export class Login extends Component {
       return <Redirect to="/" /> 
     }
 
-    // const {username, password} = this.state;
 
     return (
       
@@ -88,7 +102,8 @@ export class Login extends Component {
                       <input 
                         type="text" 
                         required 
-                        className="username" 
+                        id="username"
+                        className="form-control"
                         value={this.state.username} 
                         onChange={this.handleInput} 
                       />
@@ -98,25 +113,25 @@ export class Login extends Component {
                       <input 
                         type="password" 
                         required 
-                        className="password" 
+                        id="password"
+                        className="form-control" 
                         value={this.state.password} 
                         onChange={this.handleInput}  
                       />
                   </div>
-                  <br />
                   <div className="form-group row">
-                    <ul>
-                      {this.state.errors}
-                    </ul>
+                    {this.listErrors()}
                   </div>
                   <br />
-                  <button 
-                    type="submit"
-                    className="btn btn-primary"
-                  >Submit</button>
+                  <div className="form-group">
+                    <button 
+                      type="submit"
+                      className="btn btn-primary"
+                    >Submit</button>
+                  </div>
 
                   <div className="form-group row">
-                    <Link to="/signup">Need an account?</Link>
+                    <Link to="/signup">Register</Link>
                   </div>
 
                 </fieldset>

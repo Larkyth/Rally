@@ -34,11 +34,14 @@ export class Header extends Component {
           <li className="nav-item" onClick={this.props.logout}><Link to="/logout" className="nav-link">Logout</Link></li>
           <li className="nav-item dropdown">
             <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false">
-              Profile
+              Actions
             </a>
             <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
               <li>
                 <Link to="/signup" className="dropdown-item">Signup</Link>
+              </li>
+              <li>
+                <Link to="/createmeeting" className="dropdown-item">Create meeting</Link>
               </li>
             </ul>
           </li>

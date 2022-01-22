@@ -6,7 +6,6 @@ import PropTypes from "prop-types";
 
 
 
-
 // Pass in props and requested route requested by user
 const PrivateRoute = ({ component: Component, user, ...rest }) => {
     return (
@@ -33,17 +32,11 @@ const PrivateRoute = ({ component: Component, user, ...rest }) => {
 }
 
 
-PrivateRoute.propTypes = {
-    user: PropTypes.object.isRequired,
-};
-
-
-
 // Map the state of Redux to the props of the component
 // Format: "name": state.desiredReducer.desiredReducerStateValue
 const mapStateToProps = state => ({
     // Map the whole reducer state, will need access to multiple values
     user: state.rallyusers,
 });
-
+    
 export default connect(mapStateToProps)(PrivateRoute);

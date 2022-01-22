@@ -17,17 +17,17 @@ import Login from "./Login";
 import Signup from "./Signup";
 import UserProfile from './UserProfile';
 import PrivateRoute from './PrivateRoute';
+import CreateMeeting from './CreateMeeting';
 
 
 // Imported actions
 import { getUser } from '../actions/rallyusers';
 
 
+
 class App extends Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        // };
 
     }
 
@@ -57,7 +57,8 @@ class App extends Component {
                             <Switch>
                                 <Route exact path="/login" component={Login} />
                                 <Route exact path="/signup" component={Signup} />
-                                <PrivateRoute path="/" component={Base} />
+                                <PrivateRoute exact path="/createmeeting" component={CreateMeeting} />
+                                <PrivateRoute exact path="/" component={Base} />
                             </Switch>
                         </div>
                     </div>

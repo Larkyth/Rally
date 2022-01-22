@@ -1,4 +1,5 @@
-import { GET_USER, 
+import { 
+    GET_USER, 
     USER_FOUND, 
     USER_NOT_FOUND, 
     UNAUTHORIZED, 
@@ -8,7 +9,10 @@ import { GET_USER,
     SIGNUP_FAILED, 
     SIGNUP_SUCCESSFUL,
     LOGOUT_FAILED,
-    LOGOUT_SUCCESSFUL, 
+    LOGOUT_SUCCESSFUL,
+    RETRIEVED_DATA,
+    RETRIEVAL_FAILED,
+    LIST_USERS,
 } from "../actions/types.js";
 
 
@@ -37,9 +41,12 @@ export const getUser = () => async dispatch => {
         // If token authentication successful
         if(response.ok) {
 
+            const result = await response.json();
+            console.log(result);
+
             dispatch({
                 type: USER_FOUND,
-                payload: response.data,
+                payload: result,
             });
         }         
         // Else, deny request
@@ -62,7 +69,6 @@ export const getUser = () => async dispatch => {
         });
     }
 }
-
 
 // LOGIN: Send a request with auth token, receive result
 export const login = (username, password) => async dispatch => {
@@ -88,8 +94,23 @@ export const login = (username, password) => async dispatch => {
     try {
         const response = await fetch("/rally/login", req2);
 
-        // If login failed on server side
-        if(!response.ok) {
+        // If logged in, store token
+        if(response.ok) {
+
+            // Store retrieved auth token
+            const result = await response.json();
+            localStorage.setItem("Token", result.token);
+
+            console.log(result)
+
+            dispatch({
+                type: LOGIN_SUCCESSFUL,
+                payload: result,
+            });
+
+        }
+        // Else, login failed on server side
+        else {
 
             const result = await response.json();
             console.log(result);
@@ -100,25 +121,13 @@ export const login = (username, password) => async dispatch => {
             });
 
         }
-        // Else, logged in + store token
-        else {
-            // Store retrieved auth token
-            const result = await response.json();
-            console.log(result);
-            localStorage.setItem("Token", result.token);
-
-            dispatch({
-                type: LOGIN_SUCCESSFUL,
-                payload: response.data,
-            });
-
-        }
 
     }
     // Catch fetch errors - not the same as a bad request
     catch(error) {
         dispatch({
             type: LOGIN_FAILED,
+            payload: error.data,
         });
     }
 };
@@ -179,7 +188,7 @@ export const logout = () => async dispatch => {
 }
 
 // SIGNUP: Request user creation, receive associated auth token
-export const signup = (username, password, email, first_name, last_name) => async dispatch => {
+export const signup = (username, password, email, first_name, last_name, role) => async dispatch => {
 
     // Set loading state during promise process to deal with intermediate rendering
     dispatch({
@@ -200,7 +209,7 @@ export const signup = (username, password, email, first_name, last_name) => asyn
             first_name: first_name,
             last_name: last_name,
           },
-          tempfield: "hello",
+          role: role,
         }),
     };
     console.log(requestSetup);
@@ -212,35 +221,90 @@ export const signup = (username, password, email, first_name, last_name) => asyn
         // If sign up failed on server side
         if(!response.ok) {
             // Clear storage for consistency
+            const result = await response.json();
             localStorage.clear();
 
             dispatch({
                 type: SIGNUP_FAILED,
+                payload: result,
             });
         }
         // Else, sign up successful
         else {
             // Store retrieved auth token
             const result = await response.json();
-            console.log(result);
             localStorage.setItem("Token", result.token);
+            // Remove token from payload for easy storage in reducer
+            delete result.token
 
             dispatch({
                 type: SIGNUP_SUCCESSFUL,
-                payload: response.data,
+                payload: result,
             });
         }
     }
     // Catch fetch errors - not the same as a bad request
     catch(error) {
         // Clear storage for consistency
+        const result = await response.json();
         localStorage.clear();
 
         dispatch({
             type: SIGNUP_FAILED,
+            payload: result,
         });
     }
 
+
+}
+
+
+// GET_RALLYUSERS: Retrieve a list of users registered to the application
+export const listUsers = () => async dispatch => {
+
+    // Create request setup
+    const token = localStorage.getItem("Token")
+    const req1 = {
+        method: 'get',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': 'Token '+token,        // Django Rest Knox Token authentication format
+        },
+    };
+
+    // Async function to retrieve user list with token authentication
+    try {
+        const response = await fetch("/rally/listusers", req1);
+
+        // If fetch request successful, return list of users
+        if(response.ok) {
+
+            const result = await response.json();
+
+            dispatch({
+                type: LIST_USERS,
+                payload: result,
+            });
+        }         
+        // Else, deny request
+        else {
+
+            // Will need additional work here for redirecting on permissions vs failed to login
+
+            // Clear storage of invalid/rejected token
+            // localStorage.clear();
+
+            dispatch({
+                type: RETRIEVAL_FAILED,
+            });
+        }
+    }    
+    // Catch fetch errors - not the same as a bad request
+    catch(error) {
+        dispatch({
+            type: RETRIEVAL_FAILED,
+        });
+    }
 
 }
 
